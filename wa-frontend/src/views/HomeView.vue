@@ -2,14 +2,13 @@
   <main>
     <section class="relative h-[85vh] overflow-hidden flex items-center justify-center">
       <div class="absolute inset-0 bg-surface-container">
-        <!-- Placeholder until real photo is here -->
-        <div class="w-full h-full bg-gradient-to-br from-warm-sand to-outline-variant"></div>
+        <img src="/images/hero.jpg" alt="Handgemaakte keramiek" class="w-full h-full object-cover" />
       </div>
-      <div class="absolute inset-0 bg-black/10"></div>
+      <div class="absolute inset-0 bg-black/50"></div>
 
       <div class="relative z-10 text-center px-5 max-w-4xl mx-auto">
         <h1
-          class="font-display text-5xl md:text-7xl text-primary mb-8 leading-tight animate-fade-in-up"
+          class="font-display text-5xl md:text-7xl text-white mb-8 leading-tight animate-fade-in-up"
           style="animation-delay: 100ms"
         >
           Handgemaakte Keramiek
@@ -24,7 +23,7 @@
       </div>
 
       <div
-        class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-primary/60 animate-fade-in"
+        class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/60 animate-fade-in"
         style="animation-delay: 600ms"
       >
         <span class="text-xs uppercase tracking-widest">Scroll</span>
@@ -60,9 +59,11 @@
         <div v-if="store.products[0]" class="md:col-span-5">
           <RouterLink :to="`/producten/${store.products[0].id}`" class="group cursor-pointer block">
             <div class="overflow-hidden aspect-[4/5] bg-surface-container-low mb-6">
-              <div
-                class="w-full h-full bg-gradient-to-br from-warm-sand to-outline-variant transition-transform duration-700 group-hover:scale-105"
-              ></div>
+              <img
+                :src="store.products[0].imageUrl"
+                :alt="store.products[0].name"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
             </div>
             <div class="flex justify-between items-start">
               <div>
@@ -81,9 +82,11 @@
         <div v-if="store.products[1]" class="md:col-span-6 md:col-start-7 md:mt-24">
           <RouterLink :to="`/producten/${store.products[1].id}`" class="group cursor-pointer block">
             <div class="overflow-hidden aspect-[4/5] bg-surface-container-low mb-6">
-              <div
-                class="w-full h-full bg-gradient-to-br from-outline-variant to-[#c4a99e] transition-transform duration-700 group-hover:scale-105"
-              ></div>
+              <img
+                :src="store.products[1].imageUrl"
+                :alt="store.products[1].name"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
             </div>
             <div class="flex justify-between items-start">
               <div>
@@ -119,9 +122,9 @@
           </a>
         </div>
 
-        <div
-          class="aspect-square bg-gradient-to-br from-outline-variant to-[#c4a99e] rotate-3 hover:rotate-0 transition-transform duration-700"
-        ></div>
+        <div class="aspect-square overflow-hidden rotate-3 hover:rotate-0 transition-transform duration-700">
+          <img src="/images/about.jpg" alt="Wendy in het atelier" class="w-full h-full object-cover" />
+        </div>
       </div>
     </section>
 

@@ -4,19 +4,22 @@
   >
     <div class="flex justify-between items-center w-full px-5 md:px-16 py-2 max-w-7xl mx-auto h-20">
       <nav class="flex items-center gap-8">
-        <button aria-label="Zoeken" class="text-primary active:opacity-70">
-          <span class="material-symbols-outlined">search</span>
-        </button>
         <div class="hidden md:flex gap-8">
           <RouterLink
             to="/producten"
-            class="text-sm font-semibold tracking-wide text-primary border-b border-primary hover:text-secondary transition-colors"
+            class="text-sm font-semibold tracking-wide transition-colors"
+            :class="route.path.startsWith('/producten')
+              ? 'text-primary border-b border-primary'
+              : 'text-on-surface-variant hover:text-secondary'"
           >
             Shop
           </RouterLink>
           <RouterLink
             to="/over"
-            class="text-sm font-semibold tracking-wide text-on-surface-variant hover:text-secondary transition-colors"
+            class="text-sm font-semibold tracking-wide transition-colors"
+            :class="route.path === '/over'
+              ? 'text-primary border-b border-primary'
+              : 'text-on-surface-variant hover:text-secondary'"
           >
             Over
           </RouterLink>
@@ -55,7 +58,10 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useCartStore } from '@/stores/cartStore'
+
+const route = useRoute()
 
 const cartStore = useCartStore()
 const bagPulse = ref(false)
