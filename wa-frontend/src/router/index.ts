@@ -3,6 +3,8 @@ import HomeView from '@/views/HomeView.vue'
 import ProductsView from '@/views/ProductsView.vue'
 import ProductDetailView from '@/views/ProductDetailView.vue'
 import CartView from '@/views/CartView.vue'
+import CheckoutView from '@/views/CheckoutView.vue'
+import OrderConfirmationView from '@/views/OrderConfirmationView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -26,6 +28,16 @@ const router = createRouter({
       path: '/winkelwagen',
       name: 'cart',
       component: CartView,
+    },
+    {
+      path: '/checkout',
+      name: 'checkout',
+      component: CheckoutView,
+    },
+    {
+      path: '/bevestiging',
+      name: 'order-confirmation',
+      component: OrderConfirmationView,
     },
   ],
 })

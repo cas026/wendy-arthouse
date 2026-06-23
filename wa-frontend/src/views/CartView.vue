@@ -112,11 +112,12 @@
             </div>
           </div>
 
-          <button
-            class="w-full bg-primary text-white py-4 px-8 font-body text-sm uppercase tracking-widest hover:bg-primary-container transition-colors active:scale-[0.98]"
+          <RouterLink
+            to="/checkout"
+            class="block w-full bg-primary text-white py-4 px-8 font-body text-sm uppercase tracking-widest text-center hover:bg-primary-container transition-colors active:scale-[0.98]"
           >
             Doorgaan naar checkout
-          </button>
+          </RouterLink>
 
           <RouterLink
             to="/producten"

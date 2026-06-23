@@ -20,3 +20,4 @@ spring.mail.properties.mail.smtp.starttls.enable=true
 
 # Stripe
 stripe.secret.key=sk_test_JOUW_STRIPE_SECRET_KEY
+stripe.payment-method-configuration=pmc_JOUW_PAYMENT_METHOD_CONFIGURATION_ID
