@@ -39,7 +39,7 @@
         <nav
           class="mb-8 text-xs font-body text-on-surface-variant uppercase tracking-widest flex gap-2"
         >
-          <RouterLink to="/" class="hover:text-primary">Shop</RouterLink>
+          <RouterLink to="/producten" class="hover:text-primary">Shop</RouterLink>
           <span>/</span>
           <span>{{ store.currentProduct.category }}</span>
         </nav>
