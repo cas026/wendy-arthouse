@@ -8,19 +8,24 @@
       <div class="absolute inset-0 bg-black/10"></div>
 
       <div class="relative z-10 text-center px-5 max-w-4xl mx-auto">
-        <h1 class="font-display text-5xl md:text-7xl text-primary mb-8 leading-tight">
+        <h1
+          class="font-display text-5xl md:text-7xl text-primary mb-8 leading-tight animate-fade-in-up"
+          style="animation-delay: 100ms"
+        >
           Handgemaakte Keramiek
         </h1>
         <RouterLink
           to="/producten"
-          class="inline-block bg-primary text-white px-10 py-4 text-sm font-semibold tracking-widest uppercase hover:bg-primary-container transition-all hover:scale-105 active:scale-95"
+          class="inline-block bg-primary text-white px-10 py-4 text-sm font-semibold tracking-widest uppercase hover:bg-primary-container transition-all hover:scale-105 active:scale-95 animate-fade-in-up"
+          style="animation-delay: 280ms"
         >
           Bekijk Collectie
         </RouterLink>
       </div>
 
       <div
-        class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-primary/60"
+        class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-primary/60 animate-fade-in"
+        style="animation-delay: 600ms"
       >
         <span class="text-xs uppercase tracking-widest">Scroll</span>
         <div class="w-px h-12 bg-primary/20 relative overflow-hidden">

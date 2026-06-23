@@ -2,7 +2,7 @@
   <div class="flex flex-wrap gap-3 mb-12">
     <button
       v-for="cat in categories"
-      :key="cat.value"
+      :key="cat.label"
       @click="$emit('select', cat.value)"
       :class="[
         'px-5 py-2 rounded-full font-body text-sm transition-all duration-300',

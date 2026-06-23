@@ -32,14 +32,41 @@
 
       <div class="flex items-center gap-6">
         <RouterLink to="/winkelwagen" class="relative text-primary active:opacity-70">
-          <span class="material-symbols-outlined">shopping_bag</span>
           <span
-            class="absolute -top-1 -right-1 bg-secondary text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full"
+            class="material-symbols-outlined transition-transform"
+            :class="{ 'animate-bag-pulse': bagPulse }"
           >
-            0
+            shopping_bag
           </span>
+          <Transition name="badge">
+            <span
+              v-if="cartStore.totalItems > 0"
+              :key="cartStore.totalItems"
+              class="absolute -top-1 -right-1 bg-secondary text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full"
+            >
+              {{ cartStore.totalItems }}
+            </span>
+          </Transition>
         </RouterLink>
       </div>
     </div>
   </header>
 </template>
+
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useCartStore } from '@/stores/cartStore'
+
+const cartStore = useCartStore()
+const bagPulse = ref(false)
+
+watch(
+  () => cartStore.totalItems,
+  (newVal, oldVal) => {
+    if (newVal > oldVal) {
+      bagPulse.value = true
+      setTimeout(() => (bagPulse.value = false), 500)
+    }
+  },
+)
+</script>

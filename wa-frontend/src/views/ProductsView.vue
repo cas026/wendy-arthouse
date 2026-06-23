@@ -29,7 +29,14 @@
     <p v-else-if="store.error" class="text-error font-body">{{ store.error }}</p>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-gutter gap-y-16">
-      <ProductCard v-for="product in store.products" :key="product.id" :product="product" />
+      <div
+        v-for="(product, index) in store.products"
+        :key="product.id"
+        class="animate-fade-in-up"
+        :style="{ animationDelay: `${Math.min(index, 7) * 70}ms` }"
+      >
+        <ProductCard :product="product" />
+      </div>
     </div>
   </main>
 </template>

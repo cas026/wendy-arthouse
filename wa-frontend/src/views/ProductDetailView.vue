@@ -64,9 +64,13 @@
               </button>
             </div>
             <button
-              class="flex-1 bg-primary text-white py-4 px-8 font-body text-sm uppercase tracking-widest hover:bg-primary-container transition-colors active:scale-[0.98]"
+              @click="addToCart"
+              class="flex-1 bg-primary text-white py-4 px-8 font-body text-sm uppercase tracking-widest hover:bg-primary-container transition-colors active:scale-[0.98] overflow-hidden"
+              :class="{ 'animate-added-bounce': added }"
             >
-              In winkelwagen
+              <Transition name="btn-text" mode="out-in">
+                <span :key="String(added)">{{ added ? 'Toegevoegd!' : 'In winkelwagen' }}</span>
+              </Transition>
             </button>
           </div>
           <p
@@ -87,11 +91,21 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '@/stores/productStore'
+import { useCartStore } from '@/stores/cartStore'
 
 const route = useRoute()
 const router = useRouter()
 const store = useProductStore()
+const cartStore = useCartStore()
 const qty = ref(1)
+const added = ref(false)
 
 onMounted(() => store.fetchProductById(Number(route.params.id)))
+
+function addToCart() {
+  if (!store.currentProduct) return
+  cartStore.addItem(store.currentProduct, qty.value)
+  added.value = true
+  setTimeout(() => (added.value = false), 2000)
+}
 </script>
