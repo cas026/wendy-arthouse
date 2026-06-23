@@ -3,6 +3,8 @@ package nl.wendyarthouse.wa_backend.service
 import com.stripe.exception.StripeException
 import com.stripe.model.PaymentIntent
 import com.stripe.param.PaymentIntentCreateParams
+import nl.wendyarthouse.wa_backend.dto.AdminOrderItemResponse
+import nl.wendyarthouse.wa_backend.dto.AdminOrderResponse
 import nl.wendyarthouse.wa_backend.dto.CartItemDto
 import nl.wendyarthouse.wa_backend.dto.CreateOrderRequest
 import nl.wendyarthouse.wa_backend.model.Order
@@ -73,6 +75,46 @@ class OrderService(
         val savedOrder = orderRepository.save(order)
         emailService.sendOrderConfirmation(savedOrder)
         return savedOrder
+    }
+
+    fun getAllOrders(): List<AdminOrderResponse> =
+        orderRepository.findAllByOrderByCreatedAtDesc().map { order ->
+            AdminOrderResponse(
+                id = order.id,
+                customerName = order.customerName,
+                customerEmail = order.customerEmail,
+                shippingAddress = order.shippingAddress,
+                status = order.status,
+                totalAmount = order.totalAmount,
+                createdAt = order.createdAt,
+                items = order.items.map { item ->
+                    AdminOrderItemResponse(
+                        productName = item.productName,
+                        quantity = item.quantity,
+                        priceAtPurchase = item.priceAtPurchase,
+                    )
+                },
+            )
+        }
+
+    @Transactional
+    fun updateOrderStatus(id: Long, status: OrderStatus): AdminOrderResponse {
+        val order = orderRepository.findById(id)
+            .orElseThrow { NoSuchElementException("Order with id $id not found") }
+        order.status = status
+        val saved = orderRepository.save(order)
+        return AdminOrderResponse(
+            id = saved.id,
+            customerName = saved.customerName,
+            customerEmail = saved.customerEmail,
+            shippingAddress = saved.shippingAddress,
+            status = saved.status,
+            totalAmount = saved.totalAmount,
+            createdAt = saved.createdAt,
+            items = saved.items.map { item ->
+                AdminOrderItemResponse(item.productName, item.quantity, item.priceAtPurchase)
+            },
+        )
     }
 
     private fun calculateTotal(items: List<CartItemDto>): BigDecimal =

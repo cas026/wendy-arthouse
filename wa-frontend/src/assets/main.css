@@ -77,6 +77,13 @@
 .page-enter-from   { opacity: 0; transform: translateY(12px); }
 .page-leave-to     { opacity: 0; transform: translateY(-8px); }
 
+/* ─── Modal transitions (global — teleported content leaves scoped tree) ──── */
+
+.modal-enter-active,
+.modal-leave-active { transition: opacity 0.2s ease; }
+.modal-enter-from,
+.modal-leave-to     { opacity: 0; }
+
 /* ─── Cart item list transitions ────────────────────────── */
 
 .cart-item-enter-active { transition: opacity 0.35s ease, transform 0.35s ease; }

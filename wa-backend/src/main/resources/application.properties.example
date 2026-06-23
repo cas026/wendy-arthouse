@@ -21,3 +21,14 @@ spring.mail.properties.mail.smtp.starttls.enable=true
 # Stripe
 stripe.secret.key=sk_test_JOUW_STRIPE_SECRET_KEY
 stripe.payment-method-configuration=pmc_JOUW_PAYMENT_METHOD_CONFIGURATION_ID
+
+# Admin credentials (used for initial DB seeding — change after first run)
+admin.username=admin
+admin.password=JOUW_ADMIN_WACHTWOORD
+
+# JWT — generate with: openssl rand -base64 64 | tr -d '\n'
+jwt.secret=JOUW_BASE64_JWT_SECRET_VAN_64_BYTES
+
+# File upload
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
