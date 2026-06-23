@@ -27,6 +27,15 @@
 
       <!-- Info -->
       <div class="lg:col-span-5 lg:sticky lg:top-32 self-start">
+        <button
+          @click="router.back()"
+          class="inline-flex items-center gap-2 text-[#514440] hover:text-[#34150c] transition-colors mb-8 group"
+        >
+          <span class="material-symbols-outlined transition-transform group-hover:-translate-x-1"
+            >arrow_back</span
+          >
+          <span class="text-sm font-semibold">Terug</span>
+        </button>
         <nav
           class="mb-8 text-xs font-body text-on-surface-variant uppercase tracking-widest flex gap-2"
         >
@@ -76,10 +85,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '@/stores/productStore'
 
 const route = useRoute()
+const router = useRouter()
 const store = useProductStore()
 const qty = ref(1)
 
