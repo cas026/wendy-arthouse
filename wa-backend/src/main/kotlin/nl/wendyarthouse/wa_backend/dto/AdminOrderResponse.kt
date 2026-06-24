@@ -19,4 +19,5 @@ data class AdminOrderResponse(
     val totalAmount: BigDecimal,
     val createdAt: LocalDateTime,
     val items: List<AdminOrderItemResponse>,
+    val trackingCode: String? = null,
 )

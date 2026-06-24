@@ -36,6 +36,20 @@ class EmailService(
         }
     }
 
+    fun sendShippingConfirmation(order: Order) {
+        try {
+            val message = mailSender.createMimeMessage()
+            val helper = MimeMessageHelper(message, true, "UTF-8")
+            helper.setTo(order.customerEmail)
+            helper.setSubject("Bestelling #${order.id} is verzonden — Wendy Arthouse")
+            helper.setText(buildShippingEmailHtml(order), true)
+            mailSender.send(message)
+            log.info("Shipping confirmation sent to ${order.customerEmail} for order #${order.id}")
+        } catch (e: Exception) {
+            log.error("Failed to send shipping confirmation for order #${order.id}", e)
+        }
+    }
+
     fun sendOrderConfirmation(order: Order) {
         try {
             val message = mailSender.createMimeMessage()
@@ -113,6 +127,61 @@ class EmailService(
                       <p style="margin:0;color:#34150c;">${order.shippingAddress}</p>
                     </div>
 
+                    <p style="color:#514440;line-height:1.6;margin-top:32px;">
+                      Met vriendelijke groet,<br>
+                      <strong style="color:#34150c;">Wendy Arthouse</strong>
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="background:#f5f4ed;padding:20px 40px;text-align:center;">
+                    <p style="margin:0;font-size:12px;color:#514440;">© 2025 Wendy Arthouse · Handmade with love in the Netherlands</p>
+                  </td>
+                </tr>
+              </table>
+            </td></tr>
+          </table>
+        </body>
+        </html>
+        """.trimIndent()
+    }
+
+    private fun buildShippingEmailHtml(order: Order): String {
+        val trackingBlock = if (order.trackingCode != null) """
+            <div style="background:#f5f4ed;padding:20px;margin-top:24px;border-left:3px solid #d5c2be;">
+              <p style="margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#514440;">Trackingnummer</p>
+              <p style="margin:0;color:#34150c;font-size:16px;font-weight:600;letter-spacing:0.05em;">${order.trackingCode}</p>
+            </div>
+        """.trimIndent() else ""
+
+        return """
+        <!DOCTYPE html>
+        <html lang="nl">
+        <body style="margin:0;padding:0;background:#fbf9f2;font-family:'Helvetica Neue',Arial,sans-serif;color:#1b1c18;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr><td align="center" style="padding: 40px 20px;">
+              <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;max-width:600px;width:100%;">
+                <tr>
+                  <td style="background:#34150c;padding:32px 40px;">
+                    <h1 style="margin:0;color:#ffffff;font-family:Georgia,serif;font-size:24px;font-weight:400;letter-spacing:0.05em;">
+                      Wendy Arthouse
+                    </h1>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 40px;">
+                    <h2 style="font-family:Georgia,serif;color:#34150c;font-weight:400;margin-top:0;">
+                      Je bestelling is onderweg!
+                    </h2>
+                    <p style="color:#514440;line-height:1.6;">Beste ${order.customerName},</p>
+                    <p style="color:#514440;line-height:1.6;">
+                      Je bestelling #${order.id} is zojuist verzonden. Je kunt hem binnenkort verwachten op het opgegeven adres.
+                    </p>
+                    $trackingBlock
+                    <div style="background:#f5f4ed;padding:20px;margin-top:24px;border-left:3px solid #d5c2be;">
+                      <p style="margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#514440;">Verzendadres</p>
+                      <p style="margin:0;color:#34150c;">${order.shippingAddress}</p>
+                    </div>
                     <p style="color:#514440;line-height:1.6;margin-top:32px;">
                       Met vriendelijke groet,<br>
                       <strong style="color:#34150c;">Wendy Arthouse</strong>

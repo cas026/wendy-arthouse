@@ -25,6 +25,8 @@ class Order(
 
     var stripePaymentIntentId: String? = null,
 
+    var trackingCode: String? = null,
+
     @Column(nullable = false)
     var createdAt: LocalDateTime = LocalDateTime.now(),
 

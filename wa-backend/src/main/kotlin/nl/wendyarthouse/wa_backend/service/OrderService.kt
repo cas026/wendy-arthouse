@@ -7,6 +7,7 @@ import nl.wendyarthouse.wa_backend.dto.AdminOrderItemResponse
 import nl.wendyarthouse.wa_backend.dto.AdminOrderResponse
 import nl.wendyarthouse.wa_backend.dto.CartItemDto
 import nl.wendyarthouse.wa_backend.dto.CreateOrderRequest
+import nl.wendyarthouse.wa_backend.dto.UpdateOrderStatusRequest
 import nl.wendyarthouse.wa_backend.model.Order
 import nl.wendyarthouse.wa_backend.model.OrderItem
 import nl.wendyarthouse.wa_backend.model.OrderStatus
@@ -26,7 +27,8 @@ class OrderService(
     @Value("\${stripe.payment-method-configuration}") private val paymentMethodConfigId: String,
 ) {
     fun createPaymentIntent(items: List<CartItemDto>): String {
-        val total = calculateTotal(items)
+        val subtotal = calculateTotal(items)
+        val total = subtotal + calculateShipping(subtotal)
         val amountInCents = total.multiply(BigDecimal("100")).setScale(0, RoundingMode.HALF_UP).toLong()
 
         val params = PaymentIntentCreateParams.builder()
@@ -50,12 +52,13 @@ class OrderService(
             throw IllegalStateException("Betaling is nog niet voltooid (status: ${paymentIntent.status})")
         }
 
+        val subtotal = calculateTotal(request.items)
         val order = Order(
             customerName = request.customerName,
             customerEmail = request.customerEmail,
             shippingAddress = request.shippingAddress,
             status = OrderStatus.PAID,
-            totalAmount = calculateTotal(request.items),
+            totalAmount = subtotal + calculateShipping(subtotal),
             stripePaymentIntentId = request.stripePaymentIntentId,
         )
 
@@ -87,6 +90,7 @@ class OrderService(
                 status = order.status,
                 totalAmount = order.totalAmount,
                 createdAt = order.createdAt,
+                trackingCode = order.trackingCode,
                 items = order.items.map { item ->
                     AdminOrderItemResponse(
                         productName = item.productName,
@@ -98,11 +102,17 @@ class OrderService(
         }
 
     @Transactional
-    fun updateOrderStatus(id: Long, status: OrderStatus): AdminOrderResponse {
+    fun updateOrderStatus(id: Long, request: UpdateOrderStatusRequest): AdminOrderResponse {
         val order = orderRepository.findById(id)
             .orElseThrow { NoSuchElementException("Order with id $id not found") }
-        order.status = status
+        order.status = request.status
+        if (request.status == OrderStatus.SHIPPED && request.trackingCode != null) {
+            order.trackingCode = request.trackingCode
+        }
         val saved = orderRepository.save(order)
+        if (request.status == OrderStatus.SHIPPED) {
+            emailService.sendShippingConfirmation(saved)
+        }
         return AdminOrderResponse(
             id = saved.id,
             customerName = saved.customerName,
@@ -111,6 +121,7 @@ class OrderService(
             status = saved.status,
             totalAmount = saved.totalAmount,
             createdAt = saved.createdAt,
+            trackingCode = saved.trackingCode,
             items = saved.items.map { item ->
                 AdminOrderItemResponse(item.productName, item.quantity, item.priceAtPurchase)
             },
@@ -123,4 +134,7 @@ class OrderService(
                 .orElseThrow { NoSuchElementException("Product met id ${dto.productId} niet gevonden") }
             sum + product.price.multiply(dto.quantity.toBigDecimal())
         }
+
+    private fun calculateShipping(subtotal: BigDecimal): BigDecimal =
+        if (subtotal >= BigDecimal("75.00")) BigDecimal.ZERO else BigDecimal("4.95")
 }

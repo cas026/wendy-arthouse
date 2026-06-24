@@ -38,6 +38,7 @@ export interface AdminOrder {
   totalAmount: number
   createdAt: string
   items: AdminOrderItem[]
+  trackingCode?: string | null
 }
 
 export const adminService = {
@@ -54,6 +55,6 @@ export const adminService = {
 
   getOrders: () =>
     api.get<AdminOrder[]>('/admin/orders'),
-  updateOrderStatus: (id: number, status: OrderStatus) =>
-    api.patch<AdminOrder>(`/admin/orders/${id}/status`, { status }),
+  updateOrderStatus: (id: number, status: OrderStatus, trackingCode?: string) =>
+    api.patch<AdminOrder>(`/admin/orders/${id}/status`, { status, trackingCode: trackingCode || undefined }),
 }

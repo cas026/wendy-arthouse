@@ -77,7 +77,7 @@ class AdminController(
         @RequestBody request: UpdateOrderStatusRequest,
     ): ResponseEntity<AdminOrderResponse> =
         try {
-            ResponseEntity.ok(orderService.updateOrderStatus(id, request.status))
+            ResponseEntity.ok(orderService.updateOrderStatus(id, request))
         } catch (e: NoSuchElementException) {
             ResponseEntity.notFound().build()
         }

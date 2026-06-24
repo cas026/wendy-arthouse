@@ -150,6 +150,9 @@
                   <p class="font-body text-xs text-on-surface-variant">
                     <span class="font-semibold text-primary">Verzendadres:</span> {{ order.shippingAddress }}
                   </p>
+                  <p v-if="order.trackingCode" class="font-body text-xs text-on-surface-variant mt-1">
+                    <span class="font-semibold text-primary">Trackingnummer:</span> {{ order.trackingCode }}
+                  </p>
                 </td>
               </tr>
             </template>
@@ -300,6 +303,39 @@
         </div>
       </Transition>
     </Teleport>
+
+    <!-- ─── Verzonden modal ───────────────────────────────────────────────────── -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="shippingModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" @click.self="shippingModal = null">
+          <div class="absolute inset-0 bg-black/40"></div>
+          <div class="relative bg-white max-w-sm w-full p-8 shadow-xl animate-fade-in-up">
+            <h3 class="font-display text-xl text-primary mb-2">Bestelling verzenden</h3>
+            <p class="font-body text-sm text-on-surface-variant mb-6">
+              Voer optioneel een trackingnummer in. De klant ontvangt een verzendbevestiging per e-mail.
+            </p>
+            <label class="block font-body text-xs uppercase tracking-widest text-on-surface-variant mb-2">Trackingnummer (optioneel)</label>
+            <input
+              v-model="shippingModal.trackingCode"
+              type="text"
+              placeholder="bijv. 3SBOL123456789"
+              class="w-full border-b border-outline bg-transparent py-2 font-body text-sm focus:outline-none focus:border-primary transition-colors mb-8"
+            />
+            <div class="flex justify-end gap-4">
+              <button @click="shippingModal = null" class="font-body text-sm text-on-surface-variant hover:text-primary uppercase tracking-widest transition-colors">
+                Annuleren
+              </button>
+              <button
+                @click="confirmShipped"
+                class="bg-primary text-white px-8 py-3 font-body text-sm uppercase tracking-widest hover:bg-primary-container transition-colors"
+              >
+                Verzenden
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </main>
 </template>
 
@@ -401,10 +437,25 @@ async function loadOrders() {
   ordersLoading.value = false
 }
 
+const shippingModal = ref<{ id: number; trackingCode: string } | null>(null)
+
 async function onStatusChange(id: number, status: string) {
+  if (status === 'SHIPPED') {
+    shippingModal.value = { id, trackingCode: '' }
+    return
+  }
   const { data } = await adminService.updateOrderStatus(id, status as OrderStatus)
   const index = orders.value.findIndex((o) => o.id === id)
   if (index !== -1) orders.value[index] = data
+}
+
+async function confirmShipped() {
+  if (!shippingModal.value) return
+  const { id, trackingCode } = shippingModal.value
+  const { data } = await adminService.updateOrderStatus(id, 'SHIPPED', trackingCode || undefined)
+  const index = orders.value.findIndex((o) => o.id === id)
+  if (index !== -1) orders.value[index] = data
+  shippingModal.value = null
 }
 
 // ─── Product modal ────────────────────────────────────────────────────────────

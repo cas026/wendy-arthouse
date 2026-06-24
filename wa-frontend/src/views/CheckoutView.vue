@@ -175,7 +175,7 @@
         >
           <Transition name="btn-text" mode="out-in">
             <span :key="processing ? 'processing' : 'idle'">
-              {{ processing ? 'Verwerken...' : `Betaal €${cartStore.totalPrice.toFixed(2).replace('.', ',')}` }}
+              {{ processing ? 'Verwerken...' : `Betaal €${grandTotal.toFixed(2).replace('.', ',')}` }}
             </span>
           </Transition>
         </button>
@@ -205,9 +205,19 @@
               </span>
             </li>
           </ul>
-          <div class="border-t border-outline-variant/30 pt-6 flex justify-between font-body font-semibold text-primary text-lg">
-            <span>Totaal</span>
-            <span>€{{ cartStore.totalPrice.toFixed(2).replace('.', ',') }}</span>
+          <div class="border-t border-outline-variant/30 pt-6 space-y-2">
+            <div class="flex justify-between font-body text-sm text-on-surface-variant">
+              <span>Subtotaal</span>
+              <span>€{{ cartStore.totalPrice.toFixed(2).replace('.', ',') }}</span>
+            </div>
+            <div class="flex justify-between font-body text-sm text-on-surface-variant">
+              <span>Verzendkosten</span>
+              <span>{{ shippingCost === 0 ? 'Gratis' : '€' + shippingCost.toFixed(2).replace('.', ',') }}</span>
+            </div>
+            <div class="flex justify-between font-body font-semibold text-primary text-lg pt-2 border-t border-outline-variant/20">
+              <span>Totaal</span>
+              <span>€{{ grandTotal.toFixed(2).replace('.', ',') }}</span>
+            </div>
           </div>
         </div>
       </aside>
@@ -224,6 +234,14 @@ import { orderService } from '@/services/orderService'
 
 const router = useRouter()
 const cartStore = useCartStore()
+
+const SHIPPING_THRESHOLD = 75
+const SHIPPING_COST = 4.95
+
+const shippingCost = computed(() =>
+  cartStore.totalPrice >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST,
+)
+const grandTotal = computed(() => cartStore.totalPrice + shippingCost.value)
 
 const form = reactive({ customerName: '', customerEmail: '' })
 
