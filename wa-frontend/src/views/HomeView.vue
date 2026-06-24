@@ -116,10 +116,10 @@
             sagittis. In ac egestas mauris. Vestibulum in bibendum mauris. Suspendisse id pharetra
             mauris. Nam purus magna, dictum ut lacinia at, hendrerit quis est. Cras volutpat.
           </p>
-          <a href="#" class="inline-flex items-center gap-4 text-primary text-sm font-semibold group">
+          <RouterLink to="/over" class="inline-flex items-center gap-4 text-primary text-sm font-semibold group">
             <span class="border-b border-primary py-1">Lees meer over mij</span>
             <span class="material-symbols-outlined transition-transform group-hover:translate-x-2">arrow_forward</span>
-          </a>
+          </RouterLink>
         </div>
 
         <div class="aspect-square overflow-hidden rotate-3 hover:rotate-0 transition-transform duration-700">
@@ -140,16 +140,13 @@
           </h4>
           <ul class="flex flex-col gap-4">
             <li>
-              <a href="#" class="text-xs text-on-surface-variant hover:text-secondary underline transition-colors">Verzending</a>
+              <RouterLink to="/verzending" class="text-xs text-on-surface-variant hover:text-secondary underline transition-colors">Verzending</RouterLink>
             </li>
             <li>
-              <a href="#" class="text-xs text-on-surface-variant hover:text-secondary underline transition-colors">Contact</a>
+              <RouterLink to="/contact" class="text-xs text-on-surface-variant hover:text-secondary underline transition-colors">Contact</RouterLink>
             </li>
             <li>
-              <a href="#" class="text-xs text-on-surface-variant hover:text-secondary underline transition-colors">FAQ</a>
-            </li>
-            <li>
-              <a href="#" class="text-xs text-on-surface-variant hover:text-secondary underline transition-colors">Retours</a>
+              <RouterLink to="/faq" class="text-xs text-on-surface-variant hover:text-secondary underline transition-colors">FAQ</RouterLink>
             </li>
           </ul>
         </div>

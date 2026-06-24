@@ -1,16 +1,40 @@
 package nl.wendyarthouse.wa_backend.service
 
+import nl.wendyarthouse.wa_backend.dto.ContactRequest
 import nl.wendyarthouse.wa_backend.model.Order
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 
 @Service
-class EmailService(private val mailSender: JavaMailSender) {
+class EmailService(
+    private val mailSender: JavaMailSender,
+    @Value("\${contact.to-email}") private val contactToEmail: String,
+) {
 
     private val log = LoggerFactory.getLogger(EmailService::class.java)
+
+    fun sendContactMessage(request: ContactRequest) {
+        try {
+            val message = mailSender.createMimeMessage()
+            val helper = MimeMessageHelper(message, false, "UTF-8")
+            helper.setTo(contactToEmail)
+            helper.setReplyTo(request.email)
+            helper.setSubject("Contactbericht van ${request.name} — Wendy Arthouse")
+            helper.setText(
+                "Naam: ${request.name}\nE-mail: ${request.email}\n\n${request.message}",
+                false,
+            )
+            mailSender.send(message)
+            log.info("Contact message from ${request.email} forwarded to $contactToEmail")
+        } catch (e: Exception) {
+            log.error("Failed to send contact message from ${request.email}", e)
+            throw e
+        }
+    }
 
     fun sendOrderConfirmation(order: Order) {
         try {
