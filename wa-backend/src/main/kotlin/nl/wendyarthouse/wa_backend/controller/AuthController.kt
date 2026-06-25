@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.bind.annotation.*
 import java.time.Duration
 
@@ -20,6 +21,7 @@ import java.time.Duration
 class AuthController(
     private val authManager: AuthenticationManager,
     private val jwtUtil: JwtUtil,
+    @Value("\${server.secure-cookies:false}") private val secureCookies: Boolean,
 ) {
     @PostMapping("/login")
     fun login(@RequestBody request: LoginRequest, response: HttpServletResponse): ResponseEntity<Map<String, String>> {
@@ -54,7 +56,7 @@ class AuthController(
     private fun buildCookie(name: String, value: String, maxAge: Duration): String =
         ResponseCookie.from(name, value)
             .httpOnly(true)
-            .secure(false) // set to true in production (HTTPS)
+            .secure(secureCookies)
             .sameSite("Lax")
             .path("/")
             .maxAge(maxAge)

@@ -6,6 +6,7 @@ import nl.wendyarthouse.wa_backend.dto.UpdateOrderStatusRequest
 import nl.wendyarthouse.wa_backend.model.Product
 import nl.wendyarthouse.wa_backend.service.OrderService
 import nl.wendyarthouse.wa_backend.service.ProductService
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -23,13 +24,13 @@ class AdminController(
 
     @PostMapping("/products")
     @ResponseStatus(HttpStatus.CREATED)
-    fun createProduct(@RequestBody request: ProductRequest): Product =
+    fun createProduct(@Valid @RequestBody request: ProductRequest): Product =
         productService.createProduct(request)
 
     @PutMapping("/products/{id}")
     fun updateProduct(
         @PathVariable id: Long,
-        @RequestBody request: ProductRequest,
+        @Valid @RequestBody request: ProductRequest,
     ): ResponseEntity<Product> =
         try {
             ResponseEntity.ok(productService.updateProduct(id, request))
@@ -51,11 +52,9 @@ class AdminController(
         @PathVariable id: Long,
         @RequestParam("file") file: MultipartFile,
     ): ResponseEntity<Product> {
-        val contentType = file.contentType.orEmpty()
-        if (!contentType.startsWith("image/")) {
-            return ResponseEntity.badRequest().build()
-        }
-        val extension = file.originalFilename?.substringAfterLast('.', "jpg") ?: "jpg"
+        val allowedTypes = mapOf("image/jpeg" to "jpg", "image/png" to "png", "image/webp" to "webp")
+        val extension = allowedTypes[file.contentType]
+            ?: return ResponseEntity.badRequest().build()
         val filename = "${id}_${System.currentTimeMillis()}.$extension"
         val uploadDir = File("uploads/products").absoluteFile.also { it.mkdirs() }
         file.transferTo(File(uploadDir, filename))

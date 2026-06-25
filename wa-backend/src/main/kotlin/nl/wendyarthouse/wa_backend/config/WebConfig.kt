@@ -1,16 +1,19 @@
 package nl.wendyarthouse.wa_backend.config
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
-class WebConfig : WebMvcConfigurer {
+class WebConfig(
+    @Value("\${cors.allowed-origin:http://localhost:5173}") private val allowedOrigin: String,
+) : WebMvcConfigurer {
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/api/**")
-            .allowedOrigins("http://localhost:5173")
+            .allowedOrigins(allowedOrigin)
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
             .allowCredentials(true)
     }

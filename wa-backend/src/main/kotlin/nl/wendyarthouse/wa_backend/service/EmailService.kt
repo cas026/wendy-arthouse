@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
+import org.springframework.web.util.HtmlUtils
 import java.math.BigDecimal
 
 @Service
@@ -65,11 +66,13 @@ class EmailService(
     }
 
     private fun buildEmailHtml(order: Order): String {
+        val name = HtmlUtils.htmlEscape(order.customerName)
+        val address = HtmlUtils.htmlEscape(order.shippingAddress)
         val itemRows = order.items.joinToString("") { item ->
             val lineTotal = item.priceAtPurchase.multiply(item.quantity.toBigDecimal())
             """
             <tr>
-                <td style="padding: 10px 0; border-bottom: 1px solid #efeee7;">${item.productName}</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #efeee7;">${HtmlUtils.htmlEscape(item.productName)}</td>
                 <td style="padding: 10px 0; border-bottom: 1px solid #efeee7; text-align: center;">${item.quantity}×</td>
                 <td style="padding: 10px 0; border-bottom: 1px solid #efeee7; text-align: right;">€${lineTotal.setScale(2)}</td>
             </tr>
@@ -95,7 +98,7 @@ class EmailService(
                     <h2 style="font-family:Georgia,serif;color:#34150c;font-weight:400;margin-top:0;">
                       Bedankt voor je bestelling!
                     </h2>
-                    <p style="color:#514440;line-height:1.6;">Beste ${order.customerName},</p>
+                    <p style="color:#514440;line-height:1.6;">Beste $name,</p>
                     <p style="color:#514440;line-height:1.6;">
                       We hebben je bestelling in goede orde ontvangen en gaan er meteen mee aan de slag.
                       Je ontvangt een update zodra je pakketje op weg is.
@@ -124,7 +127,7 @@ class EmailService(
 
                     <div style="background:#f5f4ed;padding:20px;margin-top:32px;border-left:3px solid #d5c2be;">
                       <p style="margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#514440;">Verzendadres</p>
-                      <p style="margin:0;color:#34150c;">${order.shippingAddress}</p>
+                      <p style="margin:0;color:#34150c;">$address</p>
                     </div>
 
                     <p style="color:#514440;line-height:1.6;margin-top:32px;">
@@ -147,10 +150,12 @@ class EmailService(
     }
 
     private fun buildShippingEmailHtml(order: Order): String {
+        val name = HtmlUtils.htmlEscape(order.customerName)
+        val address = HtmlUtils.htmlEscape(order.shippingAddress)
         val trackingBlock = if (order.trackingCode != null) """
             <div style="background:#f5f4ed;padding:20px;margin-top:24px;border-left:3px solid #d5c2be;">
               <p style="margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#514440;">Trackingnummer</p>
-              <p style="margin:0;color:#34150c;font-size:16px;font-weight:600;letter-spacing:0.05em;">${order.trackingCode}</p>
+              <p style="margin:0;color:#34150c;font-size:16px;font-weight:600;letter-spacing:0.05em;">${HtmlUtils.htmlEscape(order.trackingCode!!)}</p>
             </div>
         """.trimIndent() else ""
 
@@ -173,14 +178,14 @@ class EmailService(
                     <h2 style="font-family:Georgia,serif;color:#34150c;font-weight:400;margin-top:0;">
                       Je bestelling is onderweg!
                     </h2>
-                    <p style="color:#514440;line-height:1.6;">Beste ${order.customerName},</p>
+                    <p style="color:#514440;line-height:1.6;">Beste $name,</p>
                     <p style="color:#514440;line-height:1.6;">
                       Je bestelling #${order.id} is zojuist verzonden. Je kunt hem binnenkort verwachten op het opgegeven adres.
                     </p>
                     $trackingBlock
                     <div style="background:#f5f4ed;padding:20px;margin-top:24px;border-left:3px solid #d5c2be;">
                       <p style="margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#514440;">Verzendadres</p>
-                      <p style="margin:0;color:#34150c;">${order.shippingAddress}</p>
+                      <p style="margin:0;color:#34150c;">$address</p>
                     </div>
                     <p style="color:#514440;line-height:1.6;margin-top:32px;">
                       Met vriendelijke groet,<br>

@@ -53,6 +53,11 @@ class OrderService(
         }
 
         val subtotal = calculateTotal(request.items)
+        val expectedCents = (subtotal + calculateShipping(subtotal))
+            .multiply(BigDecimal("100")).setScale(0, RoundingMode.HALF_UP).toLong()
+        require(paymentIntent.amount == expectedCents) {
+            "Betaalbedrag klopt niet: verwacht ${expectedCents}¢, ontvangen ${paymentIntent.amount}¢"
+        }
         val order = Order(
             customerName = request.customerName,
             customerEmail = request.customerEmail,
